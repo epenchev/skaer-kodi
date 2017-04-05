@@ -5,8 +5,6 @@ import re
 import sys
 import urllib, urllib2
 import cookielib
-import unicodedata
-from HTMLParser import HTMLParser
 
 BASE_URL = 'https://yesmovies.to'
 USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
@@ -14,51 +12,45 @@ USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Fi
 def get_headers_list():
     return { 'User-Agent' : USER_AGENT }
 
-
-class HTMLTagParser(HTMLParser):
-    def __init__(self, caller):
-        HTMLParser.__init__(self)
-        self._tag = None
-        self._attrs = {}
-        self._caller = caller
-
-    def handle_starttag(self, tag, attrs):
-        self._tag = tag
-        self._attrs.clear()
-        self._attrs = {name: value for name, value in attrs}
-        self._caller(tag, self._attrs)
-
-
 class SpiderEngine(object):
     def __init__(self):
         self.genres = {}
+        self.movies = {}
+        self.tagparser = None
 
     def get_genres(self):
-        if len(self.genres):
-            return self.genres
         try:
             req = urllib2.Request(BASE_URL, None, get_headers_list())
             response = urllib2.urlopen(req)
-            tagparser = HTMLTagParser(self.extract_genre)
             response_data = response.read()
             response.close()
-            tagparser.feed(response_data)
-            return self.genres
+            rgx = '<a href=\"(\S+/genre/\S+)\" title=\"(\S+)\"'
+            for r in re.finditer(rgx , response_data):
+                self.genres[r.group(2)] = r.group(1)
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
                 print('Got error response code')
         return self.genres
 
-    def extract_genre(self, tag, attrs):
-        if tag == 'a' and 'title' in attrs and 'href' in attrs:
-            mch = re.match(BASE_URL + '/genre\S+' , attrs['href'])
-            if mch:
-                self.genres[attrs['href']] = attrs['title']
+    def get_movie_list(self, url):
+        try:
+            req = urllib2.Request(url, None, get_headers_list())
+            response = urllib2.urlopen(req)
+            response_data = response.read()
+            response.close()
+            rgx = '<a href=\S+ class=\"ml-mask\" title=\"(.+)\"\s+data-url=\"(\S+)\">\s.+\s.+<.+\s+data-original=\"(\S+)\"'
+            for r in re.finditer(rgx , response_data):
+                self.movies[r.group(1)] = {'api_url' : BASE_URL + '/' + r.group(2), 'img' : r.group(3)}
+        except urllib2.URLError, e:
+            if e.code == 403 or e.code == 401:
+                print('Got error response code')
 
 
 def main():
     spider = SpiderEngine()
-    print(spider.get_genres())
+    genres = spider.get_genres()
+    spider.get_movie_list(genres['Kungfu'])
+    print(spider.movies)
 
 if __name__ == '__main__':
     main()
