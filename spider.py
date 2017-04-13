@@ -10,8 +10,11 @@ import sys
 
 BASE_URL = 'https://yesmovies.to'
 USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
+URL_EP_INFO = 'https://yesmovies.to/ajax/v4_movie_episodes/(\d+)'
+URL_MOVIE_TOKEN = 'https://yesmovies.to/ajax/movie_token?eid=(\d+)&mid=(\d+)&_=unix_timestamp'
+URL_MOVIE_SOURCES = 'https://yesmovies.to/ajax/movie_sources/(\d+)?x=(\S+)&y=(\S+)'
 
-def get_headers_list():
+def headers():
     return { 'User-Agent' : USER_AGENT }
 
 def execjs(jsbuf):
@@ -35,11 +38,10 @@ class SpiderEngine(object):
     def __init__(self):
         self.genres = {}
         self.movies = {}
-        self.tagparser = None
 
-    def get_genres(self):
+    def getGenres(self):
         try:
-            req = urllib2.Request(BASE_URL, None, get_headers_list())
+            req = urllib2.Request(BASE_URL, None, headers())
             response = urllib2.urlopen(req)
             response_data = response.read()
             response.close()
@@ -51,43 +53,65 @@ class SpiderEngine(object):
                 print('Got error response code')
         return self.genres
 
-    def get_movie_list(self, url):
+    def getMovielist(self, url):
         try:
-            req = urllib2.Request(url, None, get_headers_list())
+            req = urllib2.Request(url, None, headers())
             response = urllib2.urlopen(req)
             response_data = response.read()
             response.close()
             rgx = '<a href=\S+ class=\"ml-mask\" title=\"(.+)\"\s+data-url=\"(\S+)\">\s.+\s.+<.+\s+data-original=\"(\S+)\"'
             for r in re.finditer(rgx , response_data):
-                self.movies[r.group(1)] = {'api_url' : BASE_URL + '/' + r.group(2), 'img' : r.group(3)}
+                self.movies[r.group(1)] = {'info_url' : BASE_URL + '/' + r.group(2), 'img' : r.group(3)}
         except urllib2.URLError, e:
             if e.code == 403 or e.code == 401:
                 print('Got error response code')
 
-    def get_movie_token(self, url):
+    def _apiMovietoken(self, watch_url):
         try:
-            exec_retry = 5
-            while exec_retry:
-                req = urllib2.Request(url, None, get_headers_list())
+            retry = 5
+            print(watch_url)
+            match = re.match('-(\d+)\/(\d+)', watch_url)
+            if match:
+                print match.group(1)
+            '''
+            api_url = None
+            while retry:
+                req = urllib2.Request(api_url, None, headers())
                 response = urllib2.urlopen(req)
                 res = execjs(response.read())
                 response.close()
-                exec_retry -= 1
+                retry -= 1
                 if res:
-                    print(res._x)
-                    print(res._y)
-                    break
-        except urllib2.URLError, e:
-            if e.code == 403 or e.code == 401:
-                print('Got error response code')
+                    return res
+            '''
+        except urllib2.URLError as err:
+            print(err)
+        return None
+
+
+    def getStream(self, name):
+        if name in self.movies:
+            info_url = self.movies[name]['info_url']
+            try:
+                req = urllib2.Request(info_url, None, headers())
+                response = urllib2.urlopen(req)
+                response_data = response.read()
+                response.close()
+                search = re.search('<a href=\"(.+\/watching.html)', response_data)
+                if search:
+                    self._apiMovietoken(search.group(1))
+            except urllib2.URLError as err:
+                print(err)
+        return None
 
 
 def main():
     spider = SpiderEngine()
-    genres = spider.get_genres()
-    spider.get_movie_list(genres['Kungfu'])
-    print(spider.movies)
-    spider.get_movie_token('https://yesmovies.to/ajax/movie_token?eid=613788&mid=20209')
+    #genres = spider.getGenres()
+    #spider.getMovielist(genres['Kungfu'])
+    #print(spider.movies)
+    #name = spider.movies.iterkeys().next()
+    #spider.getStream(name)
 
 if __name__ == '__main__':
     main()

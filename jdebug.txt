@@ -1,0 +1,22 @@
+https://yesmovies.to/movie/twinkle-twinkle-lucky-stars-2382/watching.html
+https://yesmovies.to/movie/twinkle-twinkle-lucky-stars-2382/166192-8/watching.html
+
+var loc = window[location];
+var temp = loc.pathname.split('/');
+tmp = temp[3].split('-');
+var eid = tmp[0];
+tmp2 = temp[2].split('-');
+var mid = tmp2[tmp2.length - 1];
+
+eid = $(_0xbdbf[53] + get_ep_index() + _0xbdbf[32]) [_0xbdbf[49]](_0xbdbf[48]);
+eid = $(#episodes-sv-69 .ep-item[data-index= ]);
+
+function get_ep_index() {
+  return parseInt($(#ep- + eid) attr(data-id))
+}
+
+https://yesmovies.to/ajax/v4_movie_episodes/2382
+# mid = 2382
+
+
+"    <i>Playing on server: </i><span class="playing-on label label-pink"></span>        </div>        <div class="pash-choose">            <div class="btn-group">                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"                        aria-haspopup="true" aria-expanded="false">                    List Server <span class="caret"></span>                </button>                <ul class="dropdown-menu" id="servers-list">                                            <li id="sv-8" data-id="8"                            class="server-item vip">                            <a title="VIP 1" href="javascript:void(0)">VIP 1</a>                        </li>                                            <li id="sv-10" data-id="10"                            class="server-item vip">                            <a title="VIP 2" href="javascript:void(0)">VIP 2</a>                        </li>                                            <li id="sv-14" data-id="14"                            class="server-item embed">                            <a title="OPENLOAD" href="javascript:void(0)">OPENLOAD</a>                        </li>                                            <li id="sv-69" data-id="69"                            class="server-item backup hidden">                            <a title="BACKUP" href="javascript:void(0)">BACKUP</a>                        </li>                                    </ul>            </div>        </div>    </div>    <div class="pas-list">                    <ul id="episodes-sv-69" class="server-list-item">                                    <li class="ep-item hidden" data-index="0"                        data-server="69" data-id="284200" id="ep-284200">                        <a href="javascript:void(0)" title="HD-720p">                            <i class="icon-play_arrow"></i>HD-720p                        </a>                    </li>                            </ul>                    <ul id="episodes-sv-14" class="server-list-item">                                    <li class="ep-item " data-index="0"                        data-server="14" data-id="374810" id="ep-374810">                        <a href="javascript:void(0)" title="HD-720p">                            <i class="icon-play_arrow"></i>HD-720p                        </a>                    </li>                            </ul>                    <ul id="episodes-sv-10" class="server-list-item">                                    <li class="ep-item " data-index="0"                        data-server="10" data-id="239282" id="ep-239282">                        <a href="javascript:void(0)" title="HD-720p">                            <i class="icon-play_arrow"></i>HD-720p                        </a>                    </li>                            </ul>                    <ul id="episodes-sv-8" class="server-list-item">                                    <li class="ep-item " data-index="0"                        data-server="8" data-id="166192" id="ep-166192">                        <a href="javascript:void(0)" title="HD-720p">                            <i class="icon-play_arrow"></i>HD-720p                        </a>                    </li>                            </ul>            </div>    <script type="text/javascript">        $(document).ready(function () {            $('.episode-item').click(function () {                $('html, body').animate({                    scrollTop: $("#media-player").offset().top - 200                }, 500);            });            if (!jQuery.browser.mobile) {                $('.pas-list ul').perfectScrollbar();            }        })    </script>"
