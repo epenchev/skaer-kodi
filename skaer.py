@@ -4,8 +4,8 @@ from lib import scraper
 
 def main():
     s = scraper.MediaScraper()
-    genres = s.get_genres()
-    movies = s.get_movies(genres['Action'])
+    genres = s.avail_genres()
+    movies = s.movies_info(genres['Action'])
     s.media_url(movies.iteritems().next())
 
 if __name__ == '__main__':
