@@ -2,7 +2,7 @@ import re
 import sys
 import time
 import json
-import urllib, urllib2
+import urllib2
 
 std_headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
@@ -53,7 +53,27 @@ class MediaScraper:
                         'img_url' : r.group(3),
                     }
         return movies
-        
+
+    def parse_playlist(self, json_data):
+        def as_object(dct):
+            streams = dict()
+            if 'playlist' in dct:
+                pl = dct['playlist']
+                if not isinstance(pl, list):
+                    raise TypeError
+                sources = pl[0]['sources']
+                for src in sources:
+                    if src['type'] == 'video/mp4':
+                        print src['label']
+                        streams[src['label']] = src['file']
+                if streams:
+                    print streams
+                    return streams
+            return dct
+
+        play_list = json.loads(json_data, object_hook=as_object)
+        print(play_list)
+
     def media_url(self, info_dict):
         movid = info_dict[1]['movid']
         data = self._urlopen(MediaScraper.BASE_URL + 'ajax/v4_movie_episodes' + '/' + movid)
@@ -77,5 +97,7 @@ class MediaScraper:
                     data = self._urlopen(
                         MediaScraper.BASE_URL + 'ajax/movie_sources/' + eid +
                         '?x=' + result.group(1) + '&y=' + result.group(2))
-                    
+                    if data:
+                        plist = self.parse_playlist(data)
+                        return plist
         return None
