@@ -3,6 +3,7 @@ import sys
 import time
 import json
 import urllib2
+import md5
 
 std_headers = {
     'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
@@ -14,9 +15,9 @@ std_headers = {
 class MediaScraper:
     BASE_URL = 'https://yesmovies.to/'
 
-    def _urlopen(self, url):
+    def _urlopen(self, url, data=None):
         try:
-            req = urllib2.Request(url, None, std_headers)
+            req = urllib2.Request(url, data, std_headers)
             response = urllib2.urlopen(req)
             data = response.read()
             response.close()
@@ -73,6 +74,15 @@ class MediaScraper:
 
         play_list = json.loads(json_data, object_hook=as_object)
         print(play_list)
+
+    def search(self, title):
+        if title:
+            m = md5.new()
+            m.update(title)
+            res = self._urlopen(MediaScraper.BASE_URL + 'ajax/movie_suggest_search.html',
+                                "keyword=" + title + "&hash=" + m.hexdigest())
+            return res
+
 
     def media_url(self, info_dict):
         movid = info_dict[1]['movid']
