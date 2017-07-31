@@ -55,6 +55,7 @@ class MediaScraper:
                     }
         return movies
 
+
     def parse_playlist(self, json_data):
         def as_object(dct):
             streams = dict()
@@ -75,13 +76,20 @@ class MediaScraper:
         play_list = json.loads(json_data, object_hook=as_object)
         print(play_list)
 
+
     def search(self, title):
-        if title:
-            m = md5.new()
-            m.update(title)
-            res = self._urlopen(MediaScraper.BASE_URL + 'ajax/movie_suggest_search.html',
-                                "keyword=" + title + "&hash=" + m.hexdigest())
-            return res
+        movies = dict()
+        m = md5.new()
+        m.update(title)
+        data = self._urlopen(MediaScraper.BASE_URL + 'ajax/movie_suggest_search.html',
+                            "keyword=" + title + "&hash=" + m.hexdigest())
+        pattern = re.compile('search\\\/(\S+)\\\\"')
+        match = pattern.search(data)
+        if match:
+            print('got match')
+            print(MediaScraper.BASE_URL + 'search/' + match.group(1))
+            movies = self.movies_info(MediaScraper.BASE_URL + 'search/' + match.group(1))
+        return movies
 
 
     def media_url(self, info_dict):
