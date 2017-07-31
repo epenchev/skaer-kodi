@@ -3,6 +3,7 @@ import sys
 import time
 import json
 import urllib2
+from cookielib import CookieJar
 import md5
 
 std_headers = {
@@ -15,17 +16,19 @@ std_headers = {
 class MediaScraper:
     BASE_URL = 'https://yesmovies.to/'
 
+    def __init__(self):
+        self._cookiejar = CookieJar()
+        self._opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookiejar))
+
     def _urlopen(self, url, data=None):
         try:
             req = urllib2.Request(url, data, std_headers)
-            response = urllib2.urlopen(req)
+            response = self._opener.open(req)
             data = response.read()
             response.close()
             return data
-        except urllib2.URLError:
-            raise
-        except:
-            print("Unexpected error:", sys.exc_info()[0])
+        except (urllib2.URLError, http.client.HTTPException, socket.error) as err:
+            print('Got error from urlopen() %s'.format(err))
         return None
 
     def avail_genres(self):
@@ -55,7 +58,6 @@ class MediaScraper:
                     }
         return movies
 
-
     def parse_playlist(self, json_data):
         def as_object(dct):
             streams = dict()
@@ -76,7 +78,6 @@ class MediaScraper:
         play_list = json.loads(json_data, object_hook=as_object)
         print(play_list)
 
-
     def search(self, title):
         movies = dict()
         m = md5.new()
@@ -86,11 +87,9 @@ class MediaScraper:
         pattern = re.compile('search\\\/(\S+)\\\\"')
         match = pattern.search(data)
         if match:
-            print('got match')
             print(MediaScraper.BASE_URL + 'search/' + match.group(1))
             movies = self.movies_info(MediaScraper.BASE_URL + 'search/' + match.group(1))
         return movies
-
 
     def media_url(self, info_dict):
         movid = info_dict[1]['movid']
