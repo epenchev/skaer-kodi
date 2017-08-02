@@ -1,0 +1,20 @@
+<addon id="plugin.video.skaer" name="Skaer" version="0.0.1" provider-name="tickbg">
+     <requires>
+         <import addon="xbmc.python" version="2.19.0"/>
+         <import addon="script.module.requests" version="2.12.4"/>
+     </requires>
+     <extension point="xbmc.python.pluginsource" library="addon.py">
+         <provides>video</provides>
+     </extension>
+     <extension point="xbmc.addon.metadata">
+         <summary lang="en">Plugin for watching movies online</summary>
+         <description lang="en">Fetches movie streams from various sources Youtube, Yesmovies, Openload movies...</description>
+         <summary lang="bg">Добавка за гледане на филми online</summary>
+         <description lang="bg">Ползва видео потоци от различни източници като Youtube, Yesmovies, Openload movies...</description>
+         <platform>all</platform>
+         <license>GNU GENERAL PUBLIC LICENSE. Version 2, June 1991</license>
+         <website>https://github.com/tickbg/skaer</website>
+         <source>https://github.com/tickbg/skaer</source>
+     </extension>
+</addon>
+

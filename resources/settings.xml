@@ -1,0 +1,6 @@
+<settings>
+    <setting id="genres" type="text" label="30000" default="None"/>
+    <setting id="search" type="text" label="30001" default="None"/>
+    <setting id="settings" type="text" label="30002" default="None"/>
+    <setting id="popular" type="text" label="30003" default="None"/>
+</settings>
