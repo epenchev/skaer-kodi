@@ -1,6 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <setting id="genres" type="text" label="30000" default="None"/>
-    <setting id="search" type="text" label="30001" default="None"/>
-    <setting id="settings" type="text" label="30002" default="None"/>
-    <setting id="popular" type="text" label="30003" default="None"/>
+    <category label="General">
+        <setting id="genres" type="text" label="30000" default=""/>
+        <setting id="search" type="text" label="30001" default=""/>
+        <setting id="settings" type="text" label="30002" default=""/>
+        <setting id="popular" type="text" label="30003" default=""/>
+    </category>
 </settings>
