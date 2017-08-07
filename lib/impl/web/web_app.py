@@ -1,9 +1,8 @@
 __author__ = 'tickbg'
 
-class WebRunner():
+class WebApp(object):
     def __init__(self):
         pass
 
-    def run(self, app_control=None, context=None):
+    def tear_down(self):
         pass
-
