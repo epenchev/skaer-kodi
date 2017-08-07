@@ -2,4 +2,5 @@ __author__ = 'tickbg'
 
 from lib import runner
 
-runner.run()
+if __name__ == '__main__':
+    runner.run()
