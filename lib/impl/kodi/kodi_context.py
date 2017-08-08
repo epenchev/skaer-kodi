@@ -9,6 +9,9 @@ import xbmc
 import xbmcaddon
 import xbmcplugin
 
+import constants
+import kodi_settings
+
 
 class KodiContext(object):
     def __init__(self):
@@ -39,8 +42,10 @@ class KodiContext(object):
         self._plugin_name = self._addon.getAddonInfo('name')
         self._version = self._addon.getAddonInfo('version')
         self._native_path = xbmc.translatePath(self._addon.getAddonInfo('path'))
-        # To be implemented
-        # self._settings = XbmcPluginSettings(self._addon)
+        self._settings = KodiSettings(self._addon)
+
+    def get_settings(self):
+        return self._settings
 
     def get_path(self):
         return self._path
@@ -57,9 +62,8 @@ class KodiContext(object):
     def get_native_path(self):
         return self._native_path
 
-    def get_settings(self):
-        # return self._settings
-        pass
+    def get_id(self):
+        return self._plugin_id
 
     def localize(self, text_id, default_text=u''):
         if isinstance(text_id, int):
@@ -106,3 +110,22 @@ class KodiContext(object):
             uri += '?' + urllib.urlencode(uri_params)
             pass
         return uri
+
+    def log(self, text, log_level=constants.LOG_NOTICE):
+        log_line = '[%s] %s' % (self.get_id(), text)
+        xbmc.log(msg=log_line, level=log_level)
+
+    def log_warning(self, text):
+        self.log(text, constants.log.WARNING)
+
+    def log_error(self, text):
+        self.log(text, constants.log.ERROR)
+
+    def log_notice(self, text):
+        self.log(text, constants.log.NOTICE)
+
+    def log_debug(self, text):
+        self.log(text, constants.log.DEBUG)
+
+    def log_info(self, text):
+        self.log(text, constants.log.INFO)
