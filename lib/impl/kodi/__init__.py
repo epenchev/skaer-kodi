@@ -1,3 +1,3 @@
 __author__ = 'tickbg'
 
-__all__ = ['KodiRunner', 'KodiContext']
+__all__ = ['KodiRunner', 'KodiContext', 'KodiApp']
