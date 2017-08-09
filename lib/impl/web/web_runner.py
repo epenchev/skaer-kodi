@@ -1,6 +1,3 @@
-__author__ = 'tickbg'
-
-
 class WebRunner(object):
     def __init__(self):
         pass

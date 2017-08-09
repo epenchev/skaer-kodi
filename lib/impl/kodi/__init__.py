@@ -1,3 +1,1 @@
-__author__ = 'tickbg'
-
-__all__ = ['KodiRunner', 'KodiContext', 'KodiApp', 'KodiSettings']
+__all__ = ['KodiRunner', 'KodiContext', 'KodiApp']

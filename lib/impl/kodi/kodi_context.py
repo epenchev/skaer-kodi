@@ -10,13 +10,14 @@ import xbmcaddon
 import xbmcplugin
 
 import constants
-import kodi_settings
+from kodi_settings import KodiSettings
 
 
 class KodiContext(object):
     def __init__(self):
         self._addon = xbmcaddon.Addon()
-        self._system_version = None
+        self._system_version = 'empty for now'
+        self._params = dict()
 
         # path of the uri
         self._uri = sys.argv[0]
@@ -28,7 +29,6 @@ class KodiContext(object):
             params = sys.argv[2][1:]
             if len(params) > 0:
                 self._uri = self._uri + '?' + params
-                self._params = {}
                 params = dict(urlparse.parse_qsl(params))
                 for par in params:
                     item = params[par]
@@ -43,6 +43,10 @@ class KodiContext(object):
         self._version = self._addon.getAddonInfo('version')
         self._native_path = xbmc.translatePath(self._addon.getAddonInfo('path'))
         self._settings = KodiSettings(self._addon)
+
+    def _log(self, text, log_level=constants.LOG_NOTICE):
+        log_line = '[%s] %s' % (self.get_id(), text)
+        xbmc.log(msg=log_line, level=log_level)
 
     def get_settings(self):
         return self._settings
@@ -64,6 +68,19 @@ class KodiContext(object):
 
     def get_id(self):
         return self._plugin_id
+
+    def get_name(self):
+        return self._plugin_name
+
+    def get_system_version(self):
+        '''
+        if not self._system_version:
+            self._system_version = KodiVersion(version='', releasename='', appname='')
+        '''
+        return self._system_version
+
+    def get_version(self):
+        return self._version
 
     def localize(self, text_id, default_text=u''):
         if isinstance(text_id, int):
@@ -108,21 +125,17 @@ class KodiContext(object):
             pass
         return uri
 
-    def log(self, text, log_level=constants.LOG_NOTICE):
-        log_line = '[%s] %s' % (self.get_id(), text)
-        xbmc.log(msg=log_line, level=log_level)
-
     def log_warning(self, text):
-        self.log(text, constants.log.WARNING)
+        self._log(text, constants.LOG_WARNING)
 
     def log_error(self, text):
-        self.log(text, constants.log.ERROR)
+        self._log(text, constants.LOG_ERROR)
 
     def log_notice(self, text):
-        self.log(text, constants.log.NOTICE)
+        self._log(text, constants.LOG_NOTICE)
 
     def log_debug(self, text):
-        self.log(text, constants.log.DEBUG)
+        self._log(text, constants.LOG_DEBUG)
 
     def log_info(self, text):
-        self.log(text, constants.log.INFO)
+        self._log(text, constants.LOG_INFO)

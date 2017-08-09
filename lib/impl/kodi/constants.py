@@ -1,7 +1,5 @@
-__author__ = 'tickbg'
-
-
 # Constants related to logging
+LOG_DEBUG = 0
 LOG_INFO = 2
 LOG_NOTICE = 2
 LOG_WARNING = 3

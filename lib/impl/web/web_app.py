@@ -1,5 +1,3 @@
-__author__ = 'tickbg'
-
 class WebApp(object):
     def __init__(self):
         pass

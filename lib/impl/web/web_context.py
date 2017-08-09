@@ -1,5 +1,3 @@
-__author__ = 'tickbg'
-
 class WebContext(object):
     def __init__(self, path=u'/', params=None, plugin_name=u'', plugin_id=u''):
         pass

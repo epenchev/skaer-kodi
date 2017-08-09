@@ -1,6 +1,3 @@
-__author__ = 'tickbg'
-
-
 class KodiSettings(object):
     def __init__(self, xbmc_addon):
         self._xbmc_addon = xbmc_addon

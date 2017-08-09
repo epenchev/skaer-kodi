@@ -1,5 +1,3 @@
-__author__ = 'tickbg'
-
 __all__ = ['Runner', 'Context']
 
 try:
