@@ -11,12 +11,13 @@ import xbmcplugin
 
 import constants
 from kodi_settings import KodiSettings
+from kodi_version import KodiVersion
 
 
 class KodiContext(object):
     def __init__(self):
         self._addon = xbmcaddon.Addon()
-        self._system_version = 'empty for now'
+        self._system_version = None
         self._params = dict()
 
         # path of the uri
@@ -73,10 +74,8 @@ class KodiContext(object):
         return self._plugin_name
 
     def get_system_version(self):
-        '''
         if not self._system_version:
-            self._system_version = KodiVersion(version='', releasename='', appname='')
-        '''
+            self._system_version = KodiVersion()
         return self._system_version
 
     def get_version(self):
