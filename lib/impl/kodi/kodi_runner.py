@@ -1,6 +1,7 @@
 import xbmcgui
 import xbmcplugin
 from app_exceptions import AppException
+from kodi_items import *
 
 
 class KodiRunner(object):
@@ -20,8 +21,9 @@ class KodiRunner(object):
         options = {}
         options.update(results[1])
 
-        xbmcplugin.endOfDirectory(context.get_handle(), succeeded=False)
         '''
+        Original code, activate after test
+
         if isinstance(result, bool) and not result:
             xbmcplugin.endOfDirectory(context.get_handle(), succeeded=False)
         elif isinstance(result, VideoItem) or isinstance(result, AudioItem) or isinstance(result, UriItem):
@@ -45,16 +47,27 @@ class KodiRunner(object):
                 context.get_handle(), succeeded=True,
                 cacheToDisc=options.get(Abstractapp_control.RESULT_CACHE_TO_DISC, True))
         else:
-            # handle exception
+            # TODO handle exception
             pass
         '''
+        if isinstance(result, bool) and not result:
+            xbmcplugin.endOfDirectory(context.get_handle(), succeeded=False)
+        elif isinstance(result, DirectoryItem):
+            self._add_directory(context, result)
+        elif isinstance(result, list):
+            item_count = len(result)
+            for item in result:
+                if isinstance(item, DirectoryItem):
+                    self._add_directory(context, item, item_count)
+        xbmcplugin.endOfDirectory(context.get_handle(), succeeded=True)
 
     def _set_resolved_url(self, context, base_item, succeeded=True):
         item = xbmc_items.to_item(context, base_item)
         item.setPath(base_item.get_uri())
         xbmcplugin.setResolvedUrl(context.get_handle(), succeeded=succeeded, listitem=item)
-
+    
     def _add_directory(self, context, directory_item, item_count=0):
+        '''
         item = xbmcgui.ListItem(label=directory_item.get_name(),
                                 iconImage=u'DefaultFolder.png',
                                 thumbnailImage=directory_item.get_image())
@@ -65,16 +78,19 @@ class KodiRunner(object):
             item.addContextMenuItems(directory_item.get_context_menu(),
                                      replaceItems=directory_item.replace_context_menu())
         item.setInfo(type=u'video', infoLabels=info_labels.create_from_item(context, directory_item))
-
+        '''
+        context.log_notice(directory_item.get_name())
+        item = xbmcgui.ListItem(label=directory_item.get_name(),
+                                thumbnailImage=directory_item.get_image())
         xbmcplugin.addDirectoryItem(handle=context.get_handle(),
                                     url=directory_item.get_uri(),
                                     listitem=item,
-                                    isFolder=True,
+                                    isFolder=False,
                                     totalItems=item_count)
-
+    
     def _add_video(self, context, video_item, item_count=0):
         item = xbmc_items.to_video_item(context, video_item)
-
+    
         xbmcplugin.addDirectoryItem(handle=context.get_handle(),
                                     url=video_item.get_uri(),
                                     listitem=item,

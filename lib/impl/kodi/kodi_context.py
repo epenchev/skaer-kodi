@@ -83,28 +83,46 @@ class KodiContext(object):
 
     def localize(self, text_id, default_text=u''):
         if isinstance(text_id, int):
-            """
-            Use all localization strings!
-            Addons should only use the range 30000 thru 30999 (see: http://kodi.wiki/view/Language_support) but we
-            do it anyway. I want some of the localized strings for the views of a skin.
-            """
-            if text_id >= 0 and (text_id < 30000 or text_id > 30999):
+            if text_id:
                 result = xbmc.getLocalizedString(text_id)
+
+                self.log_notice(result)
+
                 if result is not None and result:
-                    return utils.to_unicode(result)
-                pass
-            pass
+                    return result.decode('utf-8')
+        return default_text.decode('utf-8')
 
-        result = self._addon.getLocalizedString(int(text_id))
-        if result is not None and result:
-            return utils.to_unicode(result)
+    def _create_path(self, *args):
+        comps = []
+        for arg in args:
+            if isinstance(arg, list):
+                return self._create_path(*arg)
 
-        return utils.to_unicode(default_text)
+            comps.append(unicode(arg.strip('/').replace('\\', '/').replace('//', '/')))
+
+        uri_path = '/'.join(comps)
+        if uri_path:
+            return u'/%s/' % uri_path
+
+        return '/'
+
+    def _create_uri_path(self, *args):
+        comps = []
+        for arg in args:
+            if isinstance(arg, list):
+                return self._create_uri_path(*arg)
+            comps.append(arg.strip('/').replace('\\', '/').replace('//', '/').encode('utf-8'))
+
+        uri_path = '/'.join(comps)
+        if uri_path:
+            return urllib.quote('/%s/' % uri_path)
+
+        return '/'
 
     def create_uri(self, path=u'/', params=None):
         if not params:
             params = {}
-        uri = create_uri_path(path)
+        uri = self._create_uri_path(path)
         if uri:
             uri = "%s://%s%s" % ('plugin', self._plugin_id.encode('utf-8'), uri)
         else:

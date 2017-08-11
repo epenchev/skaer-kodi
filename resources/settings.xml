@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <category label="General">
-        <setting id="genres" type="text" label="30000" default=""/>
-        <setting id="search" type="text" label="30001" default=""/>
-        <setting id="settings" type="text" label="30002" default=""/>
-        <setting id="popular" type="text" label="30003" default=""/>
+    <category label="32001">
+        <setting id="genres" type="text" label="32011" enable="true" default="Genes"/>
+        <setting id="search" type="text" label="32012" enable="true" default="Search"/>
+        <setting id="settings" type="text" label="32013" enable="true" default="Settings"/>
+        <setting id="popular" type="text" label="32014" enable="true" default="Popular"/>
     </category>
 </settings>
