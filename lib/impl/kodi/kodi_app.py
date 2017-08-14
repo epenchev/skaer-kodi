@@ -2,7 +2,7 @@ import re
 import constants
 from app_exceptions import AppException
 from kodi_items import *
-
+from lib import scraper
 
 class RegisterPath(object):
     def __init__(self, re_path):
@@ -43,7 +43,7 @@ class KodiApp(object):
         raise AppException("Mapping for path '%s' not found" % path)
 
     @RegisterPath('^/$')
-    def on_root(self, context, re_match):
+    def _on_root(self, context, re_match):
         result = list()
         genres_item = DirectoryItem('[B]%s[/B]' % context.localize(constants.GENRES_LABEL),
                                     context.create_uri(['genres']), '')
@@ -52,8 +52,19 @@ class KodiApp(object):
                                      context.create_uri(['popular']), '')
         result.append(popular_item)
         search_item = DirectoryItem('[B]%s[/B]' % context.localize(constants.SEARCH_LABEL),
-                                    context.create_uri('search'), '')
+                                    context.create_uri(['search']), '')
         result.append(search_item)
+        return result
+
+    @RegisterPath('^/genres/$')
+    def _on_genres(self, context, re_match):
+        result = list()
+        s = scraper.MediaScraper()
+        genres = s.avail_genres()
+        for name in genres.iterkeys():
+            context.log_notice(name)
+            result.append(DirectoryItem('[B]%s[/B]' % name,
+                          context.create_uri([name]), ''))
         return result
 
     def tear_down(self, context):
