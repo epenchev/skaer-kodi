@@ -79,7 +79,6 @@ class KodiRunner(object):
                                      replaceItems=directory_item.replace_context_menu())
         item.setInfo(type=u'video', infoLabels=info_labels.create_from_item(context, directory_item))
         '''
-        context.log_notice(directory_item.get_name())
         item = xbmcgui.ListItem(label=directory_item.get_name(),
                                 thumbnailImage=directory_item.get_image())
         xbmcplugin.addDirectoryItem(handle=context.get_handle(),

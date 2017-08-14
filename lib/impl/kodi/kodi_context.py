@@ -85,11 +85,13 @@ class KodiContext(object):
         if isinstance(text_id, int):
             if text_id:
                 result = xbmc.getLocalizedString(text_id)
-
-                self.log_notice(result)
-
                 if result is not None and result:
                     return result.decode('utf-8')
+
+                result = self._addon.getLocalizedString(text_id)
+                if result is not None and result:
+                    return result.decode('utf-8')
+
         return default_text.decode('utf-8')
 
     def _create_path(self, *args):
