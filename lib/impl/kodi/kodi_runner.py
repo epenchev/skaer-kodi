@@ -2,7 +2,7 @@ import xbmcgui
 import xbmcplugin
 from app_exceptions import AppException
 from kodi_items import *
-
+import kodi_info_labels
 
 class KodiRunner(object):
     def __init__(self):
@@ -21,12 +21,9 @@ class KodiRunner(object):
         options = {}
         options.update(results[1])
 
-        '''
-        Original code, activate after test
-
         if isinstance(result, bool) and not result:
             xbmcplugin.endOfDirectory(context.get_handle(), succeeded=False)
-        elif isinstance(result, VideoItem) or isinstance(result, AudioItem) or isinstance(result, UriItem):
+        elif isinstance(result, VideoItem):
             self._set_resolved_url(context, result)
         elif isinstance(result, DirectoryItem):
             self._add_directory(context, result)
@@ -37,32 +34,12 @@ class KodiRunner(object):
                     self._add_directory(context, item, item_count)
                 elif isinstance(item, VideoItem):
                     self._add_video(context, item, item_count)
-                elif isinstance(item, AudioItem):
-                    self._add_audio(context, item, item_count)
-                elif isinstance(item, ImageItem):
-                    self._add_image(context, item, item_count)
-                pass
-
-            xbmcplugin.endOfDirectory(
-                context.get_handle(), succeeded=True,
-                cacheToDisc=options.get(Abstractapp_control.RESULT_CACHE_TO_DISC, True))
+            xbmcplugin.endOfDirectory(context.get_handle(), succeeded=True)
         else:
-            # TODO handle exception
             pass
-        '''
-        if isinstance(result, bool) and not result:
-            xbmcplugin.endOfDirectory(context.get_handle(), succeeded=False)
-        elif isinstance(result, DirectoryItem):
-            self._add_directory(context, result)
-        elif isinstance(result, list):
-            item_count = len(result)
-            for item in result:
-                if isinstance(item, DirectoryItem):
-                    self._add_directory(context, item, item_count)
-        xbmcplugin.endOfDirectory(context.get_handle(), succeeded=True)
 
     def _set_resolved_url(self, context, base_item, succeeded=True):
-        item = xbmc_items.to_item(context, base_item)
+        item = self._to_video_item(context, base_item)
         item.setPath(base_item.get_uri())
         xbmcplugin.setResolvedUrl(context.get_handle(), succeeded=succeeded, listitem=item)
 
@@ -79,8 +56,46 @@ class KodiRunner(object):
                                     isFolder=True,
                                     totalItems=item_count)
 
+    def _to_video_item(self, context, video_item):
+        context.log_debug('Converting VideoItem')
+        major_version = context.get_system_version().get_version()[0]
+        thumb = video_item.get_image() if video_item.get_image() else u'DefaultVideo.png'
+        title = video_item.get_title() if video_item.get_title() else video_item.get_name()
+        fanart = ''
+        settings = context.get_settings()
+        item = xbmcgui.ListItem(label=title)
+        if video_item.get_fanart() and settings.show_fanart():
+            fanart = video_item.get_fanart()
+        if major_version <= 12:
+            item.setIconImage(thumb)
+            item.setProperty("Fanart_Image", fanart)
+        elif major_version <= 15:
+            item.setArt({'thumb': thumb, 'fanart': fanart})
+            item.setIconImage(thumb)
+        else:
+            item.setArt({'icon': thumb, 'thumb': thumb, 'fanart': fanart})
+
+        if video_item.get_context_menu() is not None:
+            item.addContextMenuItems(video_item.get_context_menu(),
+                                     replaceItems=video_item.replace_context_menu())
+
+        item.setProperty(u'IsPlayable', u'true')
+
+        if video_item.subtitles:
+            item.setSubtitles(video_item.subtitles)
+
+        labels = kodi_info_labels.from_item(context, video_item)
+
+        if 'duration' in labels:
+            duration = labels['duration']
+            del labels['duration']
+            item.addStreamInfo('video', {'duration': duration})
+
+        item.setInfo(type=u'video', infoLabels=labels)
+        return item
+
     def _add_video(self, context, video_item, item_count=0):
-        item = xbmc_items.to_video_item(context, video_item)
+        item = self._to_video_item(context, video_item)
         xbmcplugin.addDirectoryItem(handle=context.get_handle(),
                                     url=video_item.get_uri(),
                                     listitem=item,
