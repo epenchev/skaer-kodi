@@ -2,7 +2,8 @@ import re
 import constants
 from app_exceptions import AppException
 from kodi_items import *
-from lib import scraper
+from lib.scraper import *
+
 
 class RegisterPath(object):
     def __init__(self, re_path):
@@ -18,6 +19,8 @@ class RegisterPath(object):
 
 class KodiApp(object):
     def __init__(self):
+        self._scrapper = MediaScraper()
+
         # map for regular expression (path) to method (names)
         self._dict_path = {}
         for method_name in dir(self):
@@ -56,13 +59,18 @@ class KodiApp(object):
         result.append(search_item)
         return result
 
-    @RegisterPath('^/genres/$')
+    @RegisterPath('^/genres/(?P<genre>.*)/$')
     def _on_genres(self, context, re_match):
         result = list()
-        s = scraper.MediaScraper()
-        genres = s.avail_genres()
+        genres = self._scrapper.avail_genres()
+        selected_genre = re_match.group('genre')
+        # Just for the test !!!
+        if selected_genre is not None:
+            result.append(DirectoryItem('[B]%s[/B]' % selected_genre,
+                          context.create_uri(['genres', selected_genre]), ''))
+            return result
+
         for name in genres.iterkeys():
-            context.log_notice(name)
             result.append(DirectoryItem('[B]%s[/B]' % name,
                           context.create_uri([name]), ''))
         return result
