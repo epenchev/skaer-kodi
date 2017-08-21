@@ -45,6 +45,10 @@ class BaseItem(object):
     def get_fanart(self):
         return self._fanart
 
+    def get_context_menu(self):
+        # return self._context_menu
+        return None
+
 
 class DirectoryItem(BaseItem):
     def __init__(self, name, uri, image=u'', fanart=u''):
@@ -65,6 +69,7 @@ class VideoItem(BaseItem):
     def __init__(self, name, uri, image=u'', fanart=u''):
         BaseItem.__init__(self, name, uri, image, fanart)
         self._genre = None
+        self._date = None
         self._duration = None
         self._director = None
         self._episode = None
@@ -191,3 +196,6 @@ class VideoItem(BaseItem):
 
     def set_subtitles(self, value):
         self._subtitles = value if value and isinstance(value, list) else None
+
+    def get_subtitles(self):
+        return self._subtitles

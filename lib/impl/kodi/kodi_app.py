@@ -49,7 +49,7 @@ class KodiApp(object):
     def _on_root(self, context, re_match):
         result = list()
         genres_item = DirectoryItem('[B]%s[/B]' % context.localize(constants.GENRES_LABEL),
-                                    context.create_uri(['genres']), '')
+                                    context.create_uri(['genres', 'index']), '')
         result.append(genres_item)
         popular_item = DirectoryItem('[B]%s[/B]' % context.localize(constants.POPULAR_LABEL),
                                      context.create_uri(['popular']), '')
@@ -62,17 +62,21 @@ class KodiApp(object):
     @RegisterPath('^/genres/(?P<genre>.*)/$')
     def _on_genres(self, context, re_match):
         result = list()
+        selection = re_match.group('genre')
         genres = self._scrapper.avail_genres()
-        selected_genre = re_match.group('genre')
-        # Just for the test !!!
-        if selected_genre is not None:
-            result.append(DirectoryItem('[B]%s[/B]' % selected_genre,
-                          context.create_uri(['genres', selected_genre]), ''))
-            return result
+        if selection == 'index':
+            for name in genres.iterkeys():
+                result.append(DirectoryItem('[B]%s[/B]' % name,
+                              context.create_uri(['genres', name]), ''))
+        else:
+            if selection in genres:
+                movies = self._scrapper.movies_info(genres.get(selection))
+                for name, atributes in movies.iteritems():
+                    img = atributes.get('img_url')
+                    item = VideoItem(name, context.create_uri(['movies', name], ''),
+                                     image=img, fanart=img)
+                    result.append(item)
 
-        for name in genres.iterkeys():
-            result.append(DirectoryItem('[B]%s[/B]' % name,
-                          context.create_uri([name]), ''))
         return result
 
     def tear_down(self, context):

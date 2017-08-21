@@ -81,8 +81,8 @@ class KodiRunner(object):
 
         item.setProperty(u'IsPlayable', u'true')
 
-        if video_item.subtitles:
-            item.setSubtitles(video_item.subtitles)
+        if video_item._subtitles:
+            item.setSubtitles(video_item._subtitles)
 
         labels = kodi_info_labels.from_item(context, video_item)
 

@@ -19,6 +19,7 @@ class MediaScraper:
     def __init__(self):
         self._cookiejar = CookieJar()
         self._opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self._cookiejar))
+        self._genres = dict()
 
     def _urlopen(self, url, data=None):
         try:
@@ -32,14 +33,14 @@ class MediaScraper:
         return None
 
     def avail_genres(self):
-        genres = dict()
-        data = self._urlopen(MediaScraper.BASE_URL)
-        if data:
-            for r in re.finditer('<a href=\"(\S+/genre/\S+)\"'
-                                 ' title=\"(\S+)\"' , data):
-                genre_name, genre_url = r.group(2), r.group(1)
-                genres[genre_name] = genre_url
-        return genres
+        if not self._genres:
+            data = self._urlopen(MediaScraper.BASE_URL)
+            if data:
+                for r in re.finditer('<a href=\"(\S+/genre/\S+)\"'
+                                     ' title=\"(\S+)\"' , data):
+                    genre_name, genre_url = r.group(2), r.group(1)
+                    self._genres[genre_name] = genre_url
+        return self._genres
 
     def movies_info(self, url):
         movies = dict()

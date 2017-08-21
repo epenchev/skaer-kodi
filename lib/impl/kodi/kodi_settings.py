@@ -38,3 +38,7 @@ class KodiSettings(object):
         if value != 'false' and value != 'true':
             return default_value
         return value == 'true'
+
+    def show_fanart(self):
+        # return self.get_bool(constants.setting.SHOW_FANART, True)
+        return True
