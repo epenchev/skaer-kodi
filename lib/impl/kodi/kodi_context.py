@@ -139,7 +139,9 @@ class KodiContext(object):
             for param in uri_params:
                 if isinstance(params[param], int):
                     params[param] = str(params[param])
-                uri_params[param] = to_utf8(params[param])
+                # TODO
+                # uri_params[param] = to_utf8(params[param])
+                uri_params[param] = params[param]
             uri += '?' + urllib.urlencode(uri_params)
             pass
         return uri

@@ -73,11 +73,21 @@ class KodiApp(object):
                 movies = self._scrapper.movies_info(genres.get(selection))
                 for name, atributes in movies.iteritems():
                     img = atributes.get('img_url')
-                    item = VideoItem(name, context.create_uri(['movies', name], ''),
+                    item = VideoItem(name, context.create_uri(['play'], {'video_id': atributes.get('movid')}),
                                      image=img, fanart=img)
                     result.append(item)
-
         return result
+
+    @RegisterPath('^/play/$')
+    def on_play(self, context, re_match):
+        params = context.get_params()
+        if 'video_id' in params:
+            media_info = self._scrapper.media_url(params.get('video_id'))
+            playlist = media_info.get('playlist')
+            sources = playlist[0].get('sources')
+            if len(sources):
+                return VideoItem(params.get('video_id'), sources[0].get('file'))
+        return False
 
     def tear_down(self, context):
         pass

@@ -6,7 +6,7 @@ def main():
     s = scraper.MediaScraper()
     genres = s.avail_genres()
     movies = s.movies_info(genres['Action'])
-    plist = s.media_url(movies.iteritems().next())
+    plist = s.media_url(movies.iteritems().next()[1].get('movid'))
     print(plist)
     # res = s.search("Rambo")
     # print(res)

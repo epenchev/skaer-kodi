@@ -69,15 +69,13 @@ class MediaScraper:
                 sources = pl[0]['sources']
                 for src in sources:
                     if src['type'] == 'video/mp4':
-                        print src['label']
                         streams[src['label']] = src['file']
                 if streams:
-                    print streams
                     return streams
             return dct
 
         play_list = json.loads(json_data, object_hook=as_object)
-        print(play_list)
+        return play_list
 
     def search(self, title):
         movies = dict()
@@ -92,8 +90,7 @@ class MediaScraper:
             movies = self.movies_info(MediaScraper.BASE_URL + 'search/' + match.group(1))
         return movies
 
-    def media_url(self, info_dict):
-        movid = info_dict[1]['movid']
+    def media_url(self, movid):
         data = self._urlopen(MediaScraper.BASE_URL + 'ajax/v4_movie_episodes' + '/' + movid)
         if data is not None:
             # Extract all source ids 
