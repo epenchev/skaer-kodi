@@ -73,8 +73,10 @@ class KodiApp(object):
                 movies = self._scrapper.movies_info(genres.get(selection))
                 for name, atributes in movies.iteritems():
                     img = atributes.get('img_url')
-                    item = VideoItem(name, context.create_uri(['play'], {'video_id': atributes.get('movid')}),
-                                     image=img, fanart=img)
+                    item = VideoItem(name, context.create_uri(['play'],
+                                    {'video_id': atributes.get('movid'),
+                                    'info_url' : atributes.get('info_url')}),
+                                    image=img, fanart=img)
                     result.append(item)
         return result
 
@@ -86,7 +88,7 @@ class KodiApp(object):
             playlist = media_info.get('playlist')
             sources = playlist[0].get('sources')
             if len(sources):
-                return VideoItem(params.get('video_id'), sources[0].get('file'))
+                return VideoItem(params.get('video_id'), sources[0].get('file') + '|referer=' + params.get('info_url'))
         return False
 
     def tear_down(self, context):
