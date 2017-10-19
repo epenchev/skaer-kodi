@@ -1,2 +1,2 @@
-# skaer
-HTTP media spider
+# skaer-kodi
+Skaer plugin for Kodi.
